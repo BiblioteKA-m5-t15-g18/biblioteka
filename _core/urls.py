@@ -24,4 +24,3 @@ urlpatterns = [
     path("api/", include("book.urls")),
     path("api/", include("users.urls"))
 ]
-
