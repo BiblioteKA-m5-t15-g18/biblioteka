@@ -1,14 +1,14 @@
 from rest_framework import serializers
+from django.shortcuts import get_object_or_404
+from book.models import Book
 from .models import Copy
-from book.serializer import BookSerializer
 
 
 class CopySerializer(serializers.ModelSerializer):
-    book = BookSerializer(read_only=True)
+    class Meta:
+        model = Copy
+        fields = "__all__"
+        extra_kwargs = {"book_id": {"write_only": True}}
 
     def create(self, validated_data):
         return Copy.objects.create(**validated_data)
-
-    class Meta:
-        model = Copy
-        filds = "__all__"
