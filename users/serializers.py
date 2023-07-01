@@ -6,7 +6,7 @@ from follow.serializer import FollowSerializer
 
 class UserSerializer(serializers.ModelSerializer):
     loans = serializers.SerializerMethodField()
-    following = FollowSerializer(many=True)
+    following = serializers.SerializerMethodField()
 
     class Meta:
         model = User
@@ -32,6 +32,11 @@ class UserSerializer(serializers.ModelSerializer):
     def get_loans(self, obj):
         loans = obj.loans.order_by("-id")
         serializer = LoanSerializer(loans, many=True)
+        return serializer.data
+
+    def get_following(self, obj):
+        following = obj.following.all()
+        serializer = FollowSerializer(following, many=True)
         return serializer.data
 
     def create(self, validated_data: dict) -> User:

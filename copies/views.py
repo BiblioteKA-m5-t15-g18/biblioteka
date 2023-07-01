@@ -15,6 +15,6 @@ class PermissionToRentView(ListCreateAPIView):
     serializer_class = CopySerializer
 
     def perform_create(self, serializer):
-        book_ret = self.request.data.get("book")  # Acessando o book_id do corpo JSON
+        book_ret = self.request.data.get("book")
         book = get_object_or_404(Book, id=book_ret)
         serializer.save(book=book)
