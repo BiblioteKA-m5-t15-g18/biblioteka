@@ -21,4 +21,11 @@ class FollowView(CreateAPIView):
 
     def perform_create(self, serializer):
         book = get_object_or_404(Book, pk=self.kwargs["pk"])
+        user = self.request.user
+
+        follow_exists = Follow.objects.filter(book=book, user=user).exists()
+
+        if follow_exists:
+            follow = Follow.objects.get(book=book, user=user)
+            follow.delete()
         serializer.save(book=book, user=self.request.user)

@@ -26,11 +26,13 @@ class LoanView(CreateAPIView):
         if copy.disponibilidade == False:
             raise ValidationError("A cópia não está disponível.")
 
+        user_id = self.request.data.get("user")
+        user = User.objects.get(id=user_id)
+
+
         copy.disponibilidade = False
         copy.save()
 
-        user_id = self.request.data.get("user")
-        user = User.objects.get(id=user_id)
 
         prazo = self.calculate_prazo()
         serializer.save(user=user, copy=copy, prazo=prazo)
