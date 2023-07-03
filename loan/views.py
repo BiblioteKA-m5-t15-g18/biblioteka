@@ -5,6 +5,9 @@ from rest_framework.permissions import (
     IsAdminUser,
 )
 from rest_framework_simplejwt.authentication import JWTAuthentication
+from users.models import User
+from copies.models import Copy
+
 
 class LoanView(CreateAPIView):
     authentication_classes = [JWTAuthentication]
@@ -14,6 +17,6 @@ class LoanView(CreateAPIView):
     serializer_class = LoanSerializer
 
     def perform_create(self, serializer):
-        copy_id = self.request.data.get('user_id')
+        copy_id = self.request.data.get("user_id")
         copy = User.objects.get(id=user_id)
         serializer.save(user=self.request.user, copy=copy)
