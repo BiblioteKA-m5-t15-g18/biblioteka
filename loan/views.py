@@ -1,4 +1,4 @@
-from rest_framework.generics import CreateAPIView
+from rest_framework.generics import CreateAPIView, RetrieveUpdateAPIView
 from .models import Loan
 from .serializer import LoanSerializer
 from rest_framework.permissions import (
@@ -43,3 +43,23 @@ class LoanView(CreateAPIView):
             prazo += timedelta(days=2)
 
         return prazo
+
+
+class LoanDetailView(RetrieveUpdateAPIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAdminUser]
+
+    queryset = Loan.objects.all()
+    serializer_class = LoanSerializer
+
+    def perform_update(self, serializer):
+        copy_id = self.request.data.get("copy")
+
+        user_id = self.request.data.get("user")
+
+        return serializer.save(
+            user_id=user_id,
+            copy_id=copy_id,
+            loan_id=self.kwargs.get("pk"),
+            block=self.request.data.get("block"),
+        )
