@@ -29,10 +29,8 @@ class LoanView(CreateAPIView):
         user_id = self.request.data.get("user")
         user = User.objects.get(id=user_id)
 
-
         copy.disponibilidade = False
         copy.save()
-
 
         prazo = self.calculate_prazo()
         serializer.save(user=user, copy=copy, prazo=prazo)
