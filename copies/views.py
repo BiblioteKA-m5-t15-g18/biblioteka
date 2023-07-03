@@ -4,6 +4,8 @@ from .serializer import CopySerializer
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAdminUser
 from rest_framework import generics
+from django.shortcuts import get_object_or_404
+from book.models import Book
 
 
 class PermissionToRentView(generics.ListCreateAPIView):
@@ -14,4 +16,6 @@ class PermissionToRentView(generics.ListCreateAPIView):
     serializer_class = CopySerializer
 
     def perform_create(self, serializer):
-        serializer.save(book=self.kwargs.get("book"))
+        book_ret = self.request.data.get("book")
+        book = get_object_or_404(Book, id=book_ret)
+        serializer.save(book=book)
