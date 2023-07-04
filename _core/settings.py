@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "users",
     "rest_framework",
+    "django_filters",
     "book",
     "copies",
     "loan",
@@ -76,7 +77,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "_core.wsgi.application"
 USE_TZ = True
-TIME_ZONE = 'America/Sao_Paulo'
+TIME_ZONE = "America/Sao_Paulo"
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
@@ -139,5 +140,5 @@ AUTH_USER_MODEL = "users.User"
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(days=1),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=14)
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=14),
 }
