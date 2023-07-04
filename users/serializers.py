@@ -30,14 +30,10 @@ class UserSerializer(serializers.ModelSerializer):
         }
 
     def get_loans(self, obj):
-        loans = obj.loans.order_by("-id")
-        serializer = LoanSerializer(loans, many=True)
-        return serializer.data
+        return obj.loans.count()
 
     def get_following(self, obj):
-        following = obj.following.all()
-        serializer = FollowSerializer(following, many=True)
-        return serializer.data
+        return obj.following.count()
 
     def create(self, validated_data: dict) -> User:
         if validated_data.get("is_staff"):
@@ -56,3 +52,25 @@ class UserSerializer(serializers.ModelSerializer):
         instance.save()
 
         return instance
+
+
+class UserHistoricSerializer(UserSerializer, serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["id", "name", "email", "block", "loans"]
+
+    def get_loans(self, obj):
+        loans = obj.loans.order_by("-id")
+        serializer = LoanSerializer(loans, many=True)
+        return serializer.data
+
+
+class UserDetailFollowingSerializer(UserSerializer, serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["id", "username", "following"]
+
+    def get_following(self, obj):
+        following = obj.following.all()
+        serializer = FollowSerializer(following, many=True)
+        return serializer.data
