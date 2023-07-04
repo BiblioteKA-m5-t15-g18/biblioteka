@@ -10,9 +10,6 @@ from rest_framework.permissions import (
     IsAdminUser,
 )
 from .permissions import IsAccountOnwer
-from loan.models import Loan
-from loan.serializer import LoanSerializer
-from django.shortcuts import get_object_or_404
 
 
 class UserView(generics.ListCreateAPIView):
