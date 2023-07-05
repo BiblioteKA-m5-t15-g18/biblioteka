@@ -53,13 +53,6 @@ class LoanDetailView(RetrieveUpdateAPIView):
     serializer_class = LoanSerializer
 
     def perform_update(self, serializer):
-        copy_id = self.request.data.get("copy")
-
-        user_id = self.request.data.get("user")
-
         return serializer.save(
-            user_id=user_id,
-            copy_id=copy_id,
-            loan_id=self.kwargs.get("pk"),
-            block=self.request.data.get("block"),
+            copy_id=self.kwargs.get("pk"),
         )
