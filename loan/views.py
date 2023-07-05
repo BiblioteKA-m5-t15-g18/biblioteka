@@ -24,29 +24,32 @@ class LoanView(generics.CreateAPIView):
         copy_id = self.request.data.get("copy")
         copy = Copy.objects.get(id=copy_id)
 
-        if copy.disponibilidade == False:
-            raise ValidationError("A cópia não está disponível.")
+        if copy.availability == False:
+            raise ValidationError("Copy is not available.")
 
         user_id = self.request.data.get("user")
         user = User.objects.get(id=user_id)
 
         if user.block == True:
-            raise ValidationError("O usuário está bloqueado.")
+            raise ValidationError("The user is blocked.")
 
-        copy.disponibilidade = False
+        copy.availability = False
         copy.save()
 
-        prazo = self.calculate_prazo()
-        serializer.save(user=user, copy=copy, prazo=prazo)
+        term = self.calculate_prazo()
+        loan = serializer.save(user=user, copy=copy, term=term)
+
+        copy.loan = loan.id
+        copy.save()
 
     def calculate_prazo(self):
         current_date = timezone.now()
-        prazo = current_date + timedelta(days=7)
+        term = current_date + timedelta(days=7)
 
-        if prazo.weekday() >= 5:
-            prazo += timedelta(days=2)
+        if term.weekday() >= 5:
+            term += timedelta(days=2)
 
-        return prazo
+        return term
 
 
 class LoanDetailView(generics.RetrieveUpdateAPIView):
@@ -57,13 +60,6 @@ class LoanDetailView(generics.RetrieveUpdateAPIView):
     serializer_class = LoanSerializer
 
     def perform_update(self, serializer):
-        copy_id = self.request.data.get("copy")
-
-        user_id = self.request.data.get("user")
-
         return serializer.save(
-            user_id=user_id,
-            copy_id=copy_id,
-            loan_id=self.kwargs.get("pk"),
-            block=self.request.data.get("block"),
+            copy_id=self.kwargs.get("pk"),
         )
