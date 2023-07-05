@@ -3,30 +3,23 @@ from .serializer import BookSerializer
 from copies.serializer import CopySerializer
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from .permissions import IsAdminOrReadyOnly
-from rest_framework import generics
-from rest_framework import viewsets
+from rest_framework import generics, viewsets
 from rest_framework.filters import SearchFilter
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.permissions import (
     IsAdminUser,
 )
-from users.permissions import IsAccountOnwer
+from drf_spectacular.utils import extend_schema
 
 
-class BookView(generics.CreateAPIView):
-    authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAdminOrReadyOnly]
-
-    queryset = Book.objects.all()
-    serializer_class = BookSerializer
-
-
+@extend_schema(tags=["Livros"])
 class BookViewSet(viewsets.ModelViewSet):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAdminOrReadyOnly]
 
     queryset = Book.objects.all()
     serializer_class = BookSerializer
+
     filter_backends = [DjangoFilterBackend, SearchFilter]
     filterset_fields = ["autor", "title"]
     search_fields = ["autor", "title"]
@@ -46,9 +39,10 @@ class BookViewSet(viewsets.ModelViewSet):
         serializer.save(user=self.request.user)
 
 
+@extend_schema(tags=["Livros"])
 class BookDetailView(generics.RetrieveUpdateDestroyAPIView):
     authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAdminUser | IsAccountOnwer]
+    permission_classes = [IsAdminUser]
 
     queryset = Book.objects.all()
     serializer_class = BookSerializer

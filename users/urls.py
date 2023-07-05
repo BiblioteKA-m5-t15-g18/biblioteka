@@ -1,6 +1,7 @@
 from django.urls import path
 from . import views
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from drf_spectacular.utils import extend_schema
 
 
 urlpatterns = [

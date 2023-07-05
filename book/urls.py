@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import BookView, BookViewSet, BookDetailView
+from .views import BookViewSet, BookDetailView
 from loan.views import LoanDetailView
 
 urlpatterns = [
@@ -13,5 +13,5 @@ urlpatterns = [
         ),
     ),
     path("books/loan/<int:pk>/", LoanDetailView.as_view()),
-    path("books/<int:pk>/", BookDetailView.as_view(), name="book"),
+    path("books/<int:pk>/", BookDetailView.as_view()),
 ]

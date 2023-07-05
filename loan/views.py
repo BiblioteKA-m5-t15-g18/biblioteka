@@ -11,8 +11,10 @@ from users.models import User
 from datetime import datetime, timedelta
 from rest_framework.exceptions import ValidationError
 from users.permissions import IsAccountOnwer
+from drf_spectacular.utils import extend_schema
 
 
+@extend_schema(tags=["Empréstimos"])
 class LoanView(generics.CreateAPIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAdminUser]
@@ -52,6 +54,7 @@ class LoanView(generics.CreateAPIView):
         return prazo
 
 
+@extend_schema(tags=["Empréstimos"])
 class LoanDetailView(generics.RetrieveUpdateAPIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAdminUser]
