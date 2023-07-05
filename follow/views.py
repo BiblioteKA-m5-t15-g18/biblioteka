@@ -1,4 +1,4 @@
-from rest_framework.generics import CreateAPIView, DestroyAPIView
+from rest_framework import generics
 from .models import Follow
 from users.models import User
 from .serializer import FollowSerializer
@@ -13,7 +13,7 @@ from rest_framework.permissions import (
 from rest_framework.exceptions import ValidationError
 
 
-class FollowView(CreateAPIView):
+class FollowView(generics.CreateAPIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAdminUser | IsAuthenticated, IsAccountOwner]
 
@@ -29,7 +29,7 @@ class FollowView(CreateAPIView):
             serializer.save(book=book, user=self.request.user)
 
 
-class UnfollowView(DestroyAPIView):
+class UnfollowView(generics.DestroyAPIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAdminUser | IsAuthenticated, IsAccountOwner]
     queryset = Follow.objects.all()
