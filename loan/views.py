@@ -37,7 +37,10 @@ class LoanView(generics.CreateAPIView):
         copy.save()
 
         term = self.calculate_prazo()
-        serializer.save(user=user, copy=copy, term=term)
+        loan = serializer.save(user=user, copy=copy, term=term)
+
+        copy.loan = loan.id
+        copy.save()
 
     def calculate_prazo(self):
         current_date = timezone.now()
