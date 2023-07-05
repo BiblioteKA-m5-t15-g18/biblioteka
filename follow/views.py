@@ -1,4 +1,4 @@
-from rest_framework.generics import CreateAPIView
+from rest_framework import generics
 from .models import Follow
 from users.models import User
 from .serializer import FollowSerializer
@@ -10,9 +10,10 @@ from rest_framework.permissions import (
     IsAdminUser,
     IsAuthenticated,
 )
+from rest_framework.exceptions import ValidationError
 
 
-class FollowView(CreateAPIView):
+class FollowView(generics.CreateAPIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAdminUser | IsAuthenticated, IsAccountOwner]
 
@@ -21,4 +22,23 @@ class FollowView(CreateAPIView):
 
     def perform_create(self, serializer):
         book = get_object_or_404(Book, pk=self.kwargs["pk"])
-        serializer.save(book=book, user=self.request.user)
+
+        if Follow.objects.filter(user=self.request.user, book=book).exists():
+            raise ValidationError("Você já está seguindo este livro.")
+        else:
+            serializer.save(book=book, user=self.request.user)
+
+
+class UnfollowView(generics.DestroyAPIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAdminUser | IsAuthenticated, IsAccountOwner]
+    queryset = Follow.objects.all()
+    serializer_class = FollowSerializer
+
+    def get_object(self):
+        user = self.request.user
+        book = self.kwargs["pk"]
+        if Follow.objects.filter(user=self.request.user, book=book).exists():
+            return Follow.objects.filter(user=self.request.user, book=book)
+        else:
+            raise ValidationError("Você não está seguindo esse livro")

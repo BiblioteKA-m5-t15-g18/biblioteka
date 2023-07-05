@@ -9,15 +9,15 @@ from copies.models import Copy
 class LoanSerializer(serializers.ModelSerializer):
     class Meta:
         model = Loan
-        fields = ["id", "user", "copy", "date", "prazo", "devolvido"]
-        read_only_fields = ["id", "date", "prazo", "devolvido", "prazo"]
+        fields = ["id", "user", "copy", "date", "term", "returned"]
+        read_only_fields = ["id", "date", "returned", "term"]
 
     def create(self, validated_data):
         return Loan.objects.create(**validated_data)
 
     def update(self, instance: Loan, validated_data: dict) -> Loan:
         copy = Copy.objects.get(id=validated_data["copy_id"])
-        copy.disponibilidade = True
+        copy.availability = True
         copy.save()
 
         loan = Loan.objects.get(id=copy.loan)
