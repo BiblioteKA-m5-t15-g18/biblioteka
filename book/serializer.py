@@ -13,7 +13,7 @@ class BookSerializer(serializers.ModelSerializer):
             "copies": {"write_only": True},
         }
 
-    def get_copies_total(self, obj):
+    def get_copies_total(self, obj) -> str:
         return obj.copies.count()
 
     def create(self, validated_data):

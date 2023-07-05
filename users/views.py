@@ -14,18 +14,23 @@ from .permissions import IsAccountOnwer
 from rest_framework.views import APIView, Response, Request
 from django.core.mail import send_mail
 from django.conf import settings
+from drf_spectacular.utils import extend_schema
 
 
+
+@extend_schema(tags=["Usuários"])
 class UserView(generics.ListCreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
 
+@extend_schema(tags=["Usuários"])
 class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
 
+@extend_schema(tags=["Histórico de empréstimos"])
 class UserHistoricDetailView(generics.RetrieveAPIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAdminUser | IsAccountOnwer]
@@ -38,6 +43,7 @@ class UserHistoricDetailView(generics.RetrieveAPIView):
         return User.objects.filter(id=user_id)
 
 
+@extend_schema(tags=["Livros seguidos"])
 class UserFollowDetailView(generics.RetrieveAPIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAdminUser | IsAccountOnwer]
