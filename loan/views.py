@@ -1,8 +1,4 @@
-from rest_framework.generics import (
-    CreateAPIView,
-    RetrieveUpdateAPIView,
-    RetrieveAPIView,
-)
+from rest_framework import generics
 from .models import Loan
 from .serializer import LoanSerializer
 from rest_framework.permissions import (
@@ -17,7 +13,7 @@ from rest_framework.exceptions import ValidationError
 from users.permissions import IsAccountOnwer
 
 
-class LoanView(CreateAPIView):
+class LoanView(generics.CreateAPIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAdminUser]
 
@@ -33,6 +29,9 @@ class LoanView(CreateAPIView):
 
         user_id = self.request.data.get("user")
         user = User.objects.get(id=user_id)
+
+        if user.block == True:
+            raise ValidationError("O usuário está bloqueado.")
 
         copy.disponibilidade = False
         copy.save()
@@ -50,7 +49,7 @@ class LoanView(CreateAPIView):
         return prazo
 
 
-class LoanDetailView(RetrieveUpdateAPIView):
+class LoanDetailView(generics.RetrieveUpdateAPIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAdminUser]
 
