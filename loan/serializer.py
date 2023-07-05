@@ -9,28 +9,25 @@ from copies.models import Copy
 class LoanSerializer(serializers.ModelSerializer):
     class Meta:
         model = Loan
-        fields = ["id", "user", "copy", "date", "term", "returned"]
-        read_only_fields = ["id", "date", "returned", "term"]
+        fields = ["id", "user", "copy", "date", "prazo", "devolvido"]
+        read_only_fields = ["id", "date", "prazo", "devolvido", "prazo"]
 
     def create(self, validated_data):
         return Loan.objects.create(**validated_data)
 
     def update(self, instance: Loan, validated_data: dict) -> Loan:
-        copy = Copy.objects.get(id=validated_data["copy_id"])
-        copy.availability = True
-        copy.save()
-
-        loan = Loan.objects.get(id=copy.loan)
-        loan.returned = True
+        loan = Loan.objects.get(id=validated_data["loan_id"])
+        loan.devolvido = True
         loan.save()
 
-        current_date = timezone.now()
-        print(current_date > loan.term)
+        copy = Copy.objects.get(id=validated_data["copy_id"])
+        copy.disponibilidade = True
+        copy.save()
 
-        if current_date > loan.term:
-            user = User.objects.get(id=loan.user_id)
-            user.block = True
+        if validated_data["block"]:
+            user = User.objects.get(id=validated_data["user_id"])
 
+            current_date = timezone.now()
             prazo = current_date + timedelta(days=7)
             user.timeBlock = prazo
             user.save()
