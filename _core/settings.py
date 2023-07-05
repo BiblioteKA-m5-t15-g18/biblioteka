@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     "users",
     "rest_framework",
     "django_filters",
+    "drf_spectacular",
     "book",
     "copies",
     "loan",
@@ -129,6 +130,14 @@ REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 5,
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+}
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "BiblioteKa",
+    "DESCRIPTION": "Gerencia sua biblioteca de maneira rápida e fácil.",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+    # OTHER SETTINGS
 }
 
 # Static files (CSS, JavaScript, Images)

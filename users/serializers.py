@@ -29,10 +29,10 @@ class UserSerializer(serializers.ModelSerializer):
             "timeBlock": {"read_only": True},
         }
 
-    def get_loans(self, obj):
+    def get_loans(self, obj) -> str:
         return obj.loans.count()
 
-    def get_following(self, obj):
+    def get_following(self, obj) -> str:
         return obj.following.count()
 
     def create(self, validated_data: dict) -> User:
@@ -59,7 +59,7 @@ class UserHistoricSerializer(UserSerializer, serializers.ModelSerializer):
         model = User
         fields = ["id", "name", "email", "block", "loans"]
 
-    def get_loans(self, obj):
+    def get_loans(self, obj) -> str:
         loans = obj.loans.order_by("-id")
         serializer = LoanSerializer(loans, many=True)
         return serializer.data
@@ -70,7 +70,7 @@ class UserDetailFollowingSerializer(UserSerializer, serializers.ModelSerializer)
         model = User
         fields = ["id", "username", "following"]
 
-    def get_following(self, obj):
+    def get_following(self, obj) -> str:
         following = obj.following.all()
         serializer = FollowSerializer(following, many=True)
         return serializer.data

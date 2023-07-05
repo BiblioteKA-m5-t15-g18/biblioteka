@@ -6,8 +6,10 @@ from rest_framework.permissions import IsAdminUser
 from rest_framework import generics
 from django.shortcuts import get_object_or_404
 from book.models import Book
+from drf_spectacular.utils import extend_schema
 
 
+@extend_schema(tags=["Cópias"])
 class PermissionToRentView(generics.ListCreateAPIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAdminUser]

@@ -11,8 +11,10 @@ from rest_framework.permissions import (
     IsAuthenticated,
 )
 from rest_framework.exceptions import ValidationError
+from drf_spectacular.utils import extend_schema
 
 
+@extend_schema(tags=["Livros seguidos"])
 class FollowView(generics.CreateAPIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAdminUser | IsAuthenticated, IsAccountOwner]
@@ -29,6 +31,7 @@ class FollowView(generics.CreateAPIView):
             serializer.save(book=book, user=self.request.user)
 
 
+@extend_schema(tags=["Livros seguidos"])
 class UnfollowView(generics.DestroyAPIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAdminUser | IsAuthenticated, IsAccountOwner]
