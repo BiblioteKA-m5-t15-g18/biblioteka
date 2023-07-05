@@ -24,20 +24,20 @@ class LoanView(generics.CreateAPIView):
         copy_id = self.request.data.get("copy")
         copy = Copy.objects.get(id=copy_id)
 
-        if copy.disponibilidade == False:
-            raise ValidationError("A cópia não está disponível.")
+        if copy.available == False:
+            raise ValidationError("Copy is not available.")
 
         user_id = self.request.data.get("user")
         user = User.objects.get(id=user_id)
 
         if user.block == True:
-            raise ValidationError("O usuário está bloqueado.")
+            raise ValidationError("The user is blocked.")
 
-        copy.disponibilidade = False
+        copy.available = False
         copy.save()
 
-        prazo = self.calculate_prazo()
-        loan = serializer.save(user=user, copy=copy, prazo=prazo)
+        term = self.calculate_prazo()
+        loan = serializer.save(user=user, copy=copy, term=term)
 
         copy.loan = loan.id
         copy.save()
