@@ -16,18 +16,21 @@ class LoanSerializer(serializers.ModelSerializer):
         return Loan.objects.create(**validated_data)
 
     def update(self, instance: Loan, validated_data: dict) -> Loan:
-        loan = Loan.objects.get(id=validated_data["loan_id"])
-        loan.returned= True
-        loan.save()
-
         copy = Copy.objects.get(id=validated_data["copy_id"])
         copy.availability = True
         copy.save()
 
-        if validated_data["block"]:
-            user = User.objects.get(id=validated_data["user_id"])
+        loan = Loan.objects.get(id=copy.loan)
+        loan.returned = True
+        loan.save()
 
-            current_date = timezone.now()
+        current_date = timezone.now()
+        print(current_date > loan.term)
+
+        if current_date > loan.term:
+            user = User.objects.get(id=loan.user_id)
+            user.block = True
+
             prazo = current_date + timedelta(days=7)
             user.timeBlock = prazo
             user.save()
