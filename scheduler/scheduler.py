@@ -2,7 +2,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from django_apscheduler.jobstores import register_events
 from django.utils import timezone
 import sys
-from datetime import timedelta, datetime
+from datetime import timedelta
 from users.models import User
 from loan.models import Loan
 from follow.models import Follow
@@ -13,15 +13,12 @@ from django.conf import settings
 
 
 def job():
-    date_format = "%d-%m-%Y"
     today = timezone.now()
-    today_formated = datetime.strftime(today, date_format)
-    check = Loan.objects.all()
+    loans = Loan.objects.all()
     late_loans = []
 
-    for loan in check:
-        prazo_loan = datetime.strftime(loan.term, date_format)
-        if prazo_loan < today_formated:
+    for loan in loans:
+        if today > loan.term and loan.returned == False:
             late_loans.append(loan)
 
     for late_loan in late_loans:
@@ -32,12 +29,10 @@ def job():
 
     users = User.objects.all()
     for user in users:
-        if user.block:
-            user_time_block = datetime.strftime(user.timeBlock, date_format)
-            if user_time_block < today_formated:
-                user.block = False
-                user.timeBlock = None
-                user.save()
+        if today > user.timeBlock and user.block:
+            user.block = False
+            user.timeBlock = None
+            user.save()
 
     follows = Follow.objects.all()
     for follow in follows:
