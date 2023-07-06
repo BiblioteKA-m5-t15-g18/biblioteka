@@ -74,9 +74,3 @@ class UserDetailFollowingSerializer(UserSerializer, serializers.ModelSerializer)
         following = obj.following.all()
         serializer = FollowSerializer(following, many=True)
         return serializer.data
-
-
-class SendEmailSerializer(serializers.Serializer):
-    subject = serializers.CharField()
-    message = serializers.CharField()
-    recipient_list = serializers.ListField()
