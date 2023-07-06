@@ -3,33 +3,26 @@ from .serializer import BookSerializer
 from copies.serializer import CopySerializer
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from .permissions import IsAdminOrReadyOnly
-from rest_framework import generics
-from django_filters import rest_framework as filters
+from rest_framework import generics, viewsets
+from rest_framework.filters import SearchFilter
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.permissions import (
     IsAdminUser,
 )
 from drf_spectacular.utils import extend_schema
 
 
-class BookFilter(filters.FilterSet):
-    autor = filters.CharFilter(field_name="autor", lookup_expr="icontains")
-    title = filters.CharFilter(field_name="title", lookup_expr="icontains")
-
-    class Meta:
-        model = Book
-        fields = "__all__"
-
-
 @extend_schema(tags=["Livros"])
-class BookViewSet(generics.ListCreateAPIView):
+class BookViewSet(viewsets.ModelViewSet):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAdminOrReadyOnly]
 
     queryset = Book.objects.all()
     serializer_class = BookSerializer
 
-    filter_backends = (filters.DjangoFilterBackend,)
-    filterset_class = BookFilter
+    filter_backends = [DjangoFilterBackend, SearchFilter]
+    filterset_fields = ["autor", "title"]
+    search_fields = ["autor", "title"]
 
     def perform_create(self, serializer):
         verify_book_existence = Book.objects.filter(
