@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import Book
+from copies.serializer import CopySerializer
 
 
 class BookSerializer(serializers.ModelSerializer):
@@ -25,3 +26,11 @@ class BookSerializer(serializers.ModelSerializer):
 
         if validated_data is not None:
             return Book.objects.create(**validated_data)
+
+
+class BookDetailListSerializer(serializers.ModelSerializer):
+    copies = CopySerializer(many=True)
+
+    class Meta:
+        model = Book
+        fields = ["id", "autor", "title", "copies", "user_id"]
