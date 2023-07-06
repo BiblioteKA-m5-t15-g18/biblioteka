@@ -1,16 +1,18 @@
 from apscheduler.schedulers.background import BackgroundScheduler
-from django_apscheduler.jobstores import DjangoJobStore, register_events
+from django_apscheduler.jobstores import register_events
 from django.utils import timezone
-from django_apscheduler.models import DjangoJobExecution
 import sys
 from datetime import timedelta, datetime
 from users.models import User
 from loan.models import Loan
+from follow.models import Follow
+from copies.models import Copy
+from book.models import Book
+from django.core.mail import send_mail
+from django.conf import settings
 
 
-# This is the function you want to schedule - add as many as you want and then register them in the start() function below
 def job():
-    print('schedule')
     date_format = "%d-%m-%Y"
     today = timezone.now()
     today_formated = datetime.strftime(today, date_format)
@@ -18,7 +20,7 @@ def job():
     late_loans = []
 
     for loan in check:
-        prazo_loan = datetime.strftime(loan.prazo, date_format)
+        prazo_loan = datetime.strftime(loan.term, date_format)
         if prazo_loan < today_formated:
             late_loans.append(loan)
 
@@ -37,12 +39,25 @@ def job():
                 user.timeBlock = None
                 user.save()
 
+    follows = Follow.objects.all()
+    for follow in follows:
+        copies = Copy.objects.filter(book_id=follow.book).all()
+        user = User.objects.get(id=follow.user.id)
+        book = Book.objects.get(id=follow.book.id)
+        for copy in copies:
+            if copy.available:
+                send_mail(
+                    subject="Biblioteka",
+                    message=f'Olá, {user.name}! O livro {book.title} que você está seguindo, acabou de ficar disponível. Corra antes que alguém pegue!',
+                    recipient_list=[user.email],
+                    from_email=settings.EMAIL_HOST_USER,
+                    fail_silently=False
+                )
+
 
 def start():
     scheduler = BackgroundScheduler()
-    # scheduler.add_jobstore(DjangoJobStore(), "default")
-    # run this job every 24 hours
-    scheduler.add_job(job, 'cron', hour="5", name='clean_accounts', jobstore='default')
+    scheduler.add_job(job, "cron", hour=5, name='clean_accounts')  # noqa
     register_events(scheduler)
     scheduler.start()
     print("Scheduler started...", file=sys.stdout)
