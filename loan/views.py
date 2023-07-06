@@ -1,6 +1,7 @@
 from rest_framework import generics
 from .models import Loan
 from .serializer import LoanSerializer
+from copies.serializer import CopySerializer
 from rest_framework.permissions import (
     IsAdminUser,
 )
@@ -12,6 +13,7 @@ from datetime import datetime, timedelta
 from rest_framework.exceptions import ValidationError
 from users.permissions import IsAccountOnwer
 from drf_spectacular.utils import extend_schema
+from django.shortcuts import get_object_or_404
 
 
 @extend_schema(tags=["Empréstimos"])
@@ -55,21 +57,23 @@ class LoanView(generics.CreateAPIView):
 
 
 @extend_schema(tags=["Empréstimos"])
-class LoanDetailView(generics.RetrieveUpdateAPIView):
-    authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAdminUser]
-
-    queryset = Loan.objects.all()
-    serializer_class = LoanSerializer
+class LoanDetailView(generics.UpdateAPIView):
+    queryset = Copy.objects.all()
+    serializer_class = CopySerializer
 
     def perform_update(self, serializer):
-        copy_id = self.request.data.get("copy")
+        copy = get_object_or_404(Copy, pk=self.kwargs["pk"])
+        try:
+            loan = Loan.objects.get(id=copy.loan)
+        except:
+            raise ValidationError("This copy is not on loan")
 
-        user_id = self.request.data.get("user")
+        if loan.returned == True:
+            raise ValidationError("This loan has already been returned.")
 
-        return serializer.save(
-            user_id=user_id,
-            copy_id=copy_id,
-            loan_id=self.kwargs.get("pk"),
-            block=self.request.data.get("block"),
-        )
+        copy.available = True
+        copy.loan = None
+        loan.returned = True
+
+        loan.save()
+        copy.save()
