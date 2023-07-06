@@ -1,3 +1,4 @@
+APScheduler==3.10.1
 asgiref==3.5.2
 asttokens==2.2.1
 attrs==22.1.0
@@ -7,6 +8,8 @@ colorama==0.4.6
 decorator==5.1.1
 dj-database-url==2.0.0
 Django==4.0.7
+django-apscheduler==0.6.2
+django-filter==23.2
 djangorestframework==3.14.0
 djangorestframework-simplejwt==5.2.2
 drf-spectacular==0.26.3
@@ -44,6 +47,7 @@ toml==0.10.2
 traitlets==5.7.0
 typing_extensions==4.6.3
 tzdata==2023.3
+tzlocal==5.0.1
 uritemplate==4.1.1
 wcwidth==0.2.5
 whitenoise==6.5.0
