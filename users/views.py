@@ -11,11 +11,13 @@ from rest_framework.permissions import (
     IsAdminUser,
 )
 from .permissions import IsAccountOnwer
-from rest_framework.views import APIView, Response, Request
+from rest_framework.views import APIView, Response, Request, status
 from django.core.mail import send_mail
 from django.conf import settings
 from drf_spectacular.utils import extend_schema
-
+from django.utils import timezone
+from datetime import timedelta
+from django.shortcuts import get_object_or_404
 
 
 @extend_schema(tags=["Usuários"])
@@ -50,6 +52,28 @@ class UserFollowDetailView(generics.RetrieveAPIView):
 
     queryset = User.objects.all()
     serializer_class = UserDetailFollowingSerializer
+
+
+class UserBlockView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAdminUser]
+
+    def post(self, request: Request, pk: int) -> Response:
+        today = timezone.now()
+        instance_user = get_object_or_404(User, id=pk)
+        instance_user.block = True
+        instance_user.timeBlock = today + timedelta(days=7)
+        instance_user.save()
+
+        return Response(status=status.HTTP_200_OK)
+
+    def patch(self, request: Request, pk: int) -> Response:
+        instance_user = get_object_or_404(User, id=pk)
+        instance_user.block = False
+        instance_user.timeBlock = None
+        instance_user.save()
+
+        return Response(status=status.HTTP_200_OK)
 
 
 class SendEmailView(APIView):
