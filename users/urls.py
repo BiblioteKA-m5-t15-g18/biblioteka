@@ -12,4 +12,4 @@ urlpatterns = [
     path("users/refresh/", TokenRefreshView.as_view()),
     path("users/<int:pk>/historic/", views.UserHistoricDetailView.as_view()),
     path("users/<int:pk>/following/", views.UserFollowDetailView.as_view()),
-]
+    path("users/<int:pk>/block/", views.UserBlockView.as_view()),
