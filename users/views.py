@@ -28,6 +28,9 @@ class UserView(generics.ListCreateAPIView):
 
 @extend_schema(tags=["Usuários"])
 class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAdminUser | IsAccountOnwer]
+
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
