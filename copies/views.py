@@ -1,5 +1,4 @@
 from .models import Copy
-from users.models import User
 from .serializer import CopySerializer
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAdminUser

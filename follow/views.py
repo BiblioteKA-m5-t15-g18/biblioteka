@@ -1,6 +1,5 @@
 from rest_framework import generics
 from .models import Follow
-from users.models import User
 from .serializer import FollowSerializer
 from .permissions import IsAccountOwner
 from rest_framework_simplejwt.authentication import JWTAuthentication
@@ -39,7 +38,6 @@ class UnfollowView(generics.DestroyAPIView):
     serializer_class = FollowSerializer
 
     def get_object(self):
-        user = self.request.user
         book = self.kwargs["pk"]
         if Follow.objects.filter(user=self.request.user, book=book).exists():
             return Follow.objects.filter(user=self.request.user, book=book)

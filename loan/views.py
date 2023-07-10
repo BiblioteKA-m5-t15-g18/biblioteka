@@ -58,6 +58,9 @@ class LoanView(generics.CreateAPIView):
 
 @extend_schema(tags=["Empréstimos"])
 class LoanDetailView(generics.UpdateAPIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAdminUser]
+
     queryset = Copy.objects.all()
     serializer_class = CopySerializer
 
