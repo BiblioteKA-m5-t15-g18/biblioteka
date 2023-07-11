@@ -3,7 +3,7 @@ from .serializers import (
     UserSerializer,
     UserHistoricSerializer,
     UserDetailFollowingSerializer,
-    SendEmailSerializer
+    SendEmailSerializer,
 )
 from rest_framework import generics
 from rest_framework_simplejwt.authentication import JWTAuthentication
@@ -67,16 +67,19 @@ class UserBlockView(APIView):
         instance_user.block = True
         instance_user.timeBlock = today + timedelta(days=7)
         instance_user.save()
+        user_return = UserSerializer(instance=instance_user)
 
-        return Response(status=status.HTTP_200_OK)
+        return Response(data=user_return.data, status=status.HTTP_200_OK)
 
     def patch(self, request: Request, pk: int) -> Response:
         instance_user = get_object_or_404(User, id=pk)
         instance_user.block = False
         instance_user.timeBlock = None
         instance_user.save()
+        user_return = UserSerializer(instance=instance_user)
+        # user_return.is_valid(raise_exception=True)
 
-        return Response(status=status.HTTP_200_OK)
+        return Response(data=user_return.data, status=status.HTTP_200_OK)
 
 
 class SendEmailView(APIView):
